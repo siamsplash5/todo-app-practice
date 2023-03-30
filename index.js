@@ -2,6 +2,7 @@
 // dependencies
 const express = require('express');
 const mongoose = require('mongoose');
+const todoHandler = require('./routeHandler/todoHandler');
 
 // database connection to with mongoose
 mongoose
@@ -14,8 +15,9 @@ const app = express();
 app.use(express.json());
 
 // application routes
-// default error handler
+app.use('/todo', todoHandler);
 
+// default error handler
 const errorHandler = (err, req, res, next) => {
     if (res.headersSent) {
         next(err);
