@@ -5,6 +5,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoSchema = require('../schemas/todoSchema');
+const checkLogin = require('../middlewares/checkLogin');
 
 const Todo = new mongoose.model('Todo', todoSchema);
 
@@ -12,7 +13,7 @@ const Todo = new mongoose.model('Todo', todoSchema);
 const router = express.Router();
 
 // GET ALL THE TODO
-router.get('/', async (req, res) => {
+router.get('/', checkLogin, async (req, res) => {
     try {
         const data = await Todo.find().select({ _id: 0, __v: 0, status: 0 });
         res.status(200).json(data);
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET A TODO BY ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', checkLogin, async (req, res) => {
     try {
         const data = await Todo.find({ _id: req.params.id });
         res.status(200).json(data);
@@ -32,7 +33,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST TODO
-router.post('/', async (req, res) => {
+router.post('/', checkLogin, async (req, res) => {
     const newTodo = new Todo(req.body);
     try {
         await newTodo.save();
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
 });
 
 // POST MULTIPLE TODO
-router.post('/all', async (req, res) => {
+router.post('/all', checkLogin, async (req, res) => {
     try {
         await Todo.insertMany(req.body);
         res.status(200).json({ message: 'Your todos has inserted succesfully.' });
@@ -53,7 +54,7 @@ router.post('/all', async (req, res) => {
 });
 
 // PUT TODO
-router.put('/:id', async (req, res) => {
+router.put('/:id', checkLogin, async (req, res) => {
     try {
         await Todo.updateOne({ _id: req.params.id }, { $set: { status: 'inactive' } });
         res.status(200).json({ message: 'Your todo has updated succesfully.' });
@@ -63,7 +64,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE TODO
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', checkLogin, async (req, res) => {
     try {
         await Todo.deleteOne({ _id: req.params.id });
         res.status(200).json({ message: 'Your todo has deleted succesfully.' });
